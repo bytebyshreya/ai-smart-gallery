@@ -165,6 +165,7 @@ def photo_detail(request, photo_id):
                   {'photo': photo, 'faces': faces_in_photo, 'similar_photos': similar_photos})
 
 
+
 @login_required
 def delete_photo(request, photo_id):
     photo = get_object_or_404(Photo, id=photo_id, user=request.user)

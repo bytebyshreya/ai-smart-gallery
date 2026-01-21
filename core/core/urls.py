@@ -8,7 +8,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')), # Built-in Login/Logout
     path('register/', views.register, name='register'),
-    
+   
+
 
     path('', views.home, name='home'),
     path('upload/', views.upload, name='upload'),
