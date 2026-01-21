@@ -19,7 +19,7 @@ AI Smart Gallery is a full-stack AI-powered photo management system that automat
 🛠 Tech Stack
 
 Backend: Django 5, PostgreSQL
-AI / ML: InsightFace, ONNX Runtime, OpenCV, Scikit-learn
+AI / ML: InsightFace, ONNX Runtime, OpenCV, Scikit-learn 
 Frontend: HTML
 
 ⚙️ Local Setup
