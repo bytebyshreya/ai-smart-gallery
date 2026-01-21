@@ -20,7 +20,7 @@ AI Smart Gallery is a full-stack AI-powered photo management system that automat
 
 Backend: Django 5, PostgreSQL
 AI / ML: InsightFace, ONNX Runtime, OpenCV, Scikit-learn
-Frontend: HTML, CSS, JavaScript
+Frontend: HTML
 
 ⚙️ Local Setup
 git clone https://github.com/bytebyshreya/ai-smart-gallery.git
@@ -46,5 +46,4 @@ GitHub-managed codebase
 👩‍💻 Author
 
 Shreya Ghosh
-CSE Student
 GitHub: @bytebyshreya
