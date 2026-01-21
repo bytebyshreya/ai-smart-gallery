@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+/* ================= BACKGROUND ================= */
+.events-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #eef2ff, #ffffff 65%);
+}
+
+.bg-blob {
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.45;
+    animation: float 18s ease-in-out infinite;
+}
+
+.blob-1 {
+    background: #60a5fa;
+    top: -120px;
+    left: -120px;
+}
+
+.blob-2 {
+    background: #c084fc;
+    bottom: -150px;
+    right: -120px;
+    animation-delay: 6s;
+}
+
+@keyframes float {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(50px) scale(1.1); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* Dark mode */
+[data-theme="dark"] .events-bg {
+    background: radial-gradient(circle at top, #020617, #020617 65%);
+}
+[data-theme="dark"] .blob-1 { background: #1e3a8a; }
+[data-theme="dark"] .blob-2 { background: #581c87; }
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= HEADER ================= */
+.events-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 22px 26px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(14px);
+    border: 1px solid #e2e8f0;
+    animation: fadeUp 0.6s ease forwards;
+}
+
+[data-theme="dark"] .events-header {
+    background: rgba(2,6,23,0.8);
+    border-color: #1e293b;
+}
+
+.events-header h2 {
+    margin: 0;
+    font-size: 1.9rem;
+}
+
+/* ================= GRID ================= */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    padding: 10px 0;
+    animation: fadeUp 0.8s ease forwards;
+}
+
+/* ================= CARD ================= */
+.event-card {
+    position: relative;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+/* Gradient glow */
+.event-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: -1;
+}
+
+.event-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 35px 70px rgba(37,99,235,0.25);
+}
+
+.event-card:hover::before {
+    opacity: 0.15;
+}
+
+/* ================= COLLAGE ================= */
+.card-preview {
+    height: 210px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2px;
+    background: #f1f5f9;
+    overflow: hidden;
+}
+
+.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s ease;
+}
+
+.event-card:hover .preview-img {
+    transform: scale(1.08);
+}
+
+/* ================= BODY ================= */
+.card-body {
+    padding: 18px 20px;
+}
+
+.event-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.event-title {
+    font-weight: 800;
+    font-size: 1.15rem;
+    margin: 0;
+    color: var(--text-main);
+}
+
+.event-count {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: 6px;
+}
+
+/* ================= EMPTY ================= */
+.empty-state {
+    text-align: center;
+    padding: 90px 20px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    border: 2px dashed #e2e8f0;
+    animation: fadeUp 0.6s ease forwards;
+}
+
+[data-theme="dark"] .event-card {
+    background: rgba(2,6,23,0.85);
+    border-color: #1e293b;
+}
+[data-theme="dark"] .empty-state {
+    background: rgba(2,6,23,0.85);
+    border-color: #1e293b;
+}
+</style>
+
+<!-- BACKGROUND -->
+<div class="events-bg">
+    <span class="bg-blob blob-1"></span>
+    <span class="bg-blob blob-2"></span>
+</div>
+
+<!-- HEADER -->
+<div class="events-header">
+    <h2>Moments & Events</h2>
+</div>
+
+<!-- GRID -->
+<div class="events-grid">
+    {% for event in events %}
+        <a href="{% url 'event_detail' event.id %}" class="event-card">
+            <div class="card-preview">
+                {% with pics=event.photos.all|slice:":3" %}
+                    {% if pics.0 %}
+                        <img src="{{ pics.0.image.url }}" class="preview-img" style="grid-row: span 2;">
+                    {% endif %}
+                    <div style="display:flex; flex-direction:column; gap:2px;">
+                        {% if pics.1 %}
+                            <img src="{{ pics.1.image.url }}" class="preview-img" style="height:50%;">
+                        {% endif %}
+                        {% if pics.2 %}
+                            <img src="{{ pics.2.image.url }}" class="preview-img" style="height:50%;">
+                        {% endif %}
+                    </div>
+                {% endwith %}
+            </div>
+
+            <div class="card-body">
+                <div class="event-date">{{ event.date|date:"M d, Y" }}</div>
+                <h3 class="event-title">{{ event.title }}</h3>
+                <div class="event-count">{{ event.photos.count }} photos</div>
+            </div>
+        </a>
+    {% empty %}
+        <div class="empty-state">
+            <h3>No events yet</h3>
+            <p style="color:var(--text-muted);">
+                Upload photos to automatically create moments and events.
+            </p>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

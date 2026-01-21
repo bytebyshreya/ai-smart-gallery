@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+/* ================= BACKGROUND (SAME AS LOGIN) ================= */
+
+.auth-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #eef2ff, #ffffff 65%);
+}
+
+.bg-blob {
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.6;
+    animation: float 14s ease-in-out infinite;
+}
+
+.blob-1 {
+    background: #60a5fa;
+    top: -120px;
+    left: -120px;
+}
+
+.blob-2 {
+    background: #c084fc;
+    bottom: -150px;
+    right: -120px;
+    animation-delay: 4s;
+}
+
+.blob-3 {
+    background: #38bdf8;
+    top: 45%;
+    left: 60%;
+    animation-delay: 8s;
+}
+
+@keyframes float {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(40px) scale(1.1); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* Dark mode background */
+[data-theme="dark"] .auth-bg {
+    background: radial-gradient(circle at top, #020617, #020617 65%);
+}
+[data-theme="dark"] .blob-1 { background: #1e3a8a; }
+[data-theme="dark"] .blob-2 { background: #581c87; }
+[data-theme="dark"] .blob-3 { background: #0c4a6e; }
+
+/* ================= CARD ================= */
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.auth-container {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 44px 40px;
+    border-radius: 26px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.45);
+    box-shadow:
+        0 40px 80px rgba(0,0,0,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.45);
+    animation: fadeSlide 0.6s ease forwards;
+}
+
+[data-theme="dark"] .auth-card {
+    background: rgba(2,6,23,0.85);
+    border-color: #1e293b;
+}
+
+/* ================= HEADER ================= */
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    margin: 0 auto 22px;
+    box-shadow: 0 18px 36px rgba(37,99,235,0.45);
+    transition: transform 0.3s ease;
+}
+
+.auth-card:hover .auth-icon {
+    transform: rotate(-8deg) scale(1.05);
+}
+
+.auth-header h2 {
+    font-size: 1.95rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* ================= FORM ================= */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    background: rgba(248,250,252,0.85);
+    transition:
+        border 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+.auth-card input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.18);
+}
+
+[data-theme="dark"] .auth-card input {
+    background: #020617;
+    color: #e5e7eb;
+}
+
+/* Help + errors */
+.help-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+.error-list {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 6px;
+    padding-left: 16px;
+}
+
+/* ================= BUTTON ================= */
+
+.btn-auth {
+    width: 100%;
+    padding: 15px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 20px 45px rgba(37,99,235,0.5);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 28px 65px rgba(37,99,235,0.6);
+}
+
+.btn-auth:active {
+    transform: translateY(0);
+}
+
+/* ================= FOOTER ================= */
+
+.auth-footer {
+    text-align: center;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+</style>
+
+<!-- BACKGROUND -->
+<div class="auth-bg">
+    <span class="bg-blob blob-1"></span>
+    <span class="bg-blob blob-2"></span>
+    <span class="bg-blob blob-3"></span>
+</div>
+
+<!-- REGISTER CARD -->
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h2>Create Account</h2>
+            <p>Start organizing your memories with AI</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <div class="help-text">{{ field.help_text }}</div>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <ul class="error-list">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-auth">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account?
+            <a href="{% url 'login' %}">Log In</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+/* ================= BACKGROUND ================= */
+.people-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #eef2ff, #ffffff 65%);
+}
+
+.bg-blob {
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.45;
+    animation: float 18s ease-in-out infinite;
+}
+
+.blob-1 {
+    background: #60a5fa;
+    top: -120px;
+    left: -120px;
+}
+
+.blob-2 {
+    background: #c084fc;
+    bottom: -150px;
+    right: -120px;
+    animation-delay: 6s;
+}
+
+@keyframes float {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(50px) scale(1.1); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* Dark mode */
+[data-theme="dark"] .people-bg {
+    background: radial-gradient(circle at top, #020617, #020617 65%);
+}
+[data-theme="dark"] .blob-1 { background: #1e3a8a; }
+[data-theme="dark"] .blob-2 { background: #581c87; }
+
+/* ================= HEADER ================= */
+.people-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 22px 26px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(14px);
+    border: 1px solid #e2e8f0;
+    animation: fadeUp 0.6s ease forwards;
+}
+
+[data-theme="dark"] .people-header {
+    background: rgba(2,6,23,0.8);
+    border-color: #1e293b;
+}
+
+.people-header h2 {
+    margin: 0;
+    font-size: 1.9rem;
+}
+
+.rescan-btn {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.rescan-btn:hover {
+    color: var(--primary);
+    transform: rotate(-8deg);
+}
+
+/* ================= GRID ================= */
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 30px;
+    animation: fadeUp 0.8s ease forwards;
+}
+
+/* ================= CARD ================= */
+.person-card {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.35s ease;
+}
+
+.person-card:hover {
+    transform: translateY(-8px);
+}
+
+/* Avatar ring */
+.avatar-wrapper {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: white;
+    padding: 4px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    transition: box-shadow 0.35s ease;
+}
+
+/* Gradient ring */
+.avatar-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed, #38bdf8);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.person-card:hover .avatar-wrapper::before {
+    opacity: 1;
+}
+
+.person-card:hover .avatar-wrapper {
+    box-shadow: 0 20px 45px rgba(37,99,235,0.35);
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* ================= TEXT ================= */
+.person-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-top: 10px;
+    transition: color 0.25s ease;
+}
+
+.person-card:hover .person-name {
+    color: var(--primary);
+}
+
+.person-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<!-- BACKGROUND -->
+<div class="people-bg">
+    <span class="bg-blob blob-1"></span>
+    <span class="bg-blob blob-2"></span>
+</div>
+
+<!-- HEADER -->
+<div class="people-header">
+    <h2>People & Pets</h2>
+    <a href="{% url 'rescan' %}" class="rescan-btn">
+        <i class="fa-solid fa-rotate"></i> Re-scan Library
+    </a>
+</div>
+
+<!-- GRID -->
+<div class="people-grid">
+    {% for group in groups %}
+        <a href="{% url 'person_detail' group.id %}" class="person-card">
+            <div class="avatar-wrapper">
+                {% if group.cover_face %}
+                    <img src="{{ group.cover_face.url }}" class="avatar-img">
+                {% else %}
+                    <div style="width:100%;height:100%;background:#e5e7eb;border-radius:50%;"></div>
+                {% endif %}
+            </div>
+            <div class="person-name">{{ group.name }}</div>
+            <div class="person-count">{{ group.num_faces }} photos</div>
+        </a>
+    {% endfor %}
+</div>
+
+{% endblock %}

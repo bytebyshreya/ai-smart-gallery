@@ -1,0 +1,673 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- ================= BUBBLE CANVAS (VERY IMPORTANT) ================= -->
+<canvas id="bubbleCanvas"></canvas>
+
+<style>
+/* ================= ROOT ================= */
+:root {
+    --primary: #2563eb;
+    --secondary: #7c3aed;
+    --glass-bg: rgba(255,255,255,0.65);
+    --glass-border: rgba(255,255,255,0.4);
+}
+
+/* ================= BUBBLE CANVAS ================= */
+#bubbleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Ensure UI stays above bubbles */
+.hero-wrapper,
+.features-section {
+    padding: 80px 20px 40px;  /* top | left-right | bottom */
+}
+
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes gradientMove {
+    from { background-position: 0% 50%; }
+    to { background-position: 200% 50%; }
+}
+
+/* ================= HERO ================= */
+.hero-wrapper {
+    position: relative;
+    padding: 120px 20px 160px;
+    background:
+    radial-gradient(1200px 600px at 10% -10%, #c7d2fe 0%, transparent 60%),
+    radial-gradient(1000px 500px at 90% 10%, #e9d5ff 0%, transparent 55%),
+    linear-gradient(to bottom, #f8fafc, #ffffff);
+
+    overflow: hidden;
+}
+.hero-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 60%, rgba(0,0,0,0.04));
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 950px;
+    margin: auto;
+    text-align: center;
+    animation: fadeUp 1s ease forwards;
+}
+@keyframes fadeUp {
+    from { opacity:0; transform: translateY(40px); }
+    to { opacity:1; transform: translateY(0); }
+}
+
+.badge {
+    display:inline-block;
+    padding: 8px 20px;
+    border-radius: 999px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    font-weight: 600;
+    color: #4338ca;
+    margin-bottom: 30px;
+}
+
+.hero-title {
+    font-size: 4.6rem;
+    font-weight: 900;
+    line-height: 1.05;
+}
+
+.hero-title span {
+    background: linear-gradient(120deg, var(--primary), var(--secondary), #ec4899);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 4s linear infinite;
+}
+@keyframes gradientMove {
+    from { background-position: 0% 50%; }
+    to { background-position: 200% 50%; }
+}
+.subtitle {
+    font-size: 1.3rem;
+    color: #475569;
+    max-width: 680px;
+    margin: 30px auto 45px;
+}
+
+/* ================= CTA ================= */
+.cta-group {
+    display:flex;
+    justify-content:center;
+    gap:18px;
+}
+
+.cta-primary {
+    padding:16px 44px;
+    border-radius:50px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    font-weight:700;
+    text-decoration:none;
+    box-shadow:0 20px 45px rgba(37,99,235,.45);
+    transition:.3s;
+}
+.cta-primary:hover {
+    transform: translateY(-6px);
+    box-shadow:0 30px 70px rgba(37,99,235,.6);
+}
+.cta-secondary {
+    padding:16px 40px;
+    border-radius:50px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px);
+    border:1px solid var(--glass-border);
+    font-weight:600;
+    text-decoration:none;
+    color:#1e293b;
+}
+
+/* ================= STATS ================= */
+.stats {
+    display:flex;
+    justify-content:center;
+    gap:32px;
+    margin-top:70px;
+}
+
+.stat-card {
+    background:white;
+    border-radius:26px;
+    padding:36px 44px;
+    text-align:center;
+    min-width:220px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.05);
+    transition:.35s;
+    position:relative;
+}
+.stat-card::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    border:2px solid transparent;
+    background:linear-gradient(135deg,var(--primary),var(--secondary)) border-box;
+    -webkit-mask:
+        linear-gradient(#fff 0 0) padding-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    opacity:0;
+}
+.stat-card:hover {
+    transform: translateY(-12px);
+    box-shadow:0 40px 90px rgba(37,99,235,.25);
+}
+
+.stat-card h3 {
+    font-size:2.4rem;
+    font-weight:800;
+    color:var(--primary);
+}
+
+/* ================= APP PREVIEW ================= */
+.mockup-container {
+    margin-top: 80px;   /* was 110px */
+    margin-bottom: 40px; /* ADD THIS */
+    perspective: 1400px;
+}
+
+.app-preview {
+    max-width:1150px;
+    margin:auto;
+    background:white;
+    border-radius:30px;
+    border:8px solid #020617;
+    box-shadow:0 80px 160px rgba(0,0,0,.4);
+    transform: rotateX(12deg);
+    transition: transform .7s ease, box-shadow .7s ease;
+}
+
+.app-preview:hover {
+    transform: rotateX(0deg) scale(1.04);
+    box-shadow:0 120px 220px rgba(37,99,235,.45);
+}
+
+
+.app-topbar {
+    height:64px;
+    display:flex;
+    align-items:center;
+    padding:0 26px;
+    gap:18px;
+    border-bottom:1px solid #e2e8f0;
+    background:linear-gradient(to bottom,#ffffff,#f8fafc);
+}
+
+
+.logo {
+    font-weight:800;
+    color:var(--primary);
+}
+.app-nav span {
+    font-size:.9rem;
+    margin-right:14px;
+    color:#64748b;
+}
+
+.app-nav span.active {
+    color:var(--primary);
+    font-weight:600;
+}
+.search-box {
+    margin-left:auto;
+    background:#f1f5f9;
+    padding:10px 18px;
+    border-radius:999px;
+    font-size:.85rem;
+    color:#64748b;
+}
+
+.avatar {
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+}
+
+.app-body {
+    padding:26px;
+}
+.library-stats {
+    display: flex;
+    gap: 14px;
+}
+
+.lib-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 14px;
+    min-width: 110px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    transition: all 0.25s ease;
+}
+.lib-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(37,99,235,0.25);
+    border-color: var(--primary);
+}
+.lib-icon {
+    font-size: 1.2rem;
+}
+
+.lib-card strong {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.lib-card small {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+
+.lib-pill {
+    background:white;
+    border:1px solid #e2e8f0;
+    padding:8px 16px;
+    border-radius:999px;
+    font-size:.8rem;
+}
+.preview-grid {
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:16px;
+}
+
+.preview-photo {
+    aspect-ratio:1;
+    border-radius:18px;
+    background:linear-gradient(135deg,#c7d2fe,#e9d5ff);
+    transition:.35s;
+}
+
+.preview-photo:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow:0 25px 60px rgba(0,0,0,.25);
+}
+
+
+/* ================= WHY SECTION ================= */
+.why-section {
+    padding: 140px 20px 120px;
+    background:
+        radial-gradient(600px 300px at 10% 10%, #e0e7ff, transparent 60%),
+        radial-gradient(600px 300px at 90% 30%, #ede9fe, transparent 60%),
+        linear-gradient(to bottom, #ffffff, #f8fafc);
+    text-align: center;
+}
+
+.why-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    color: #0f172a;
+}
+
+.why-subtitle {
+    max-width: 680px;
+    margin: 0 auto 70px;
+    font-size: 1.1rem;
+    color: #64748b;
+}
+
+.why-grid {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 40px;
+}
+
+.why-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(16px);
+    border-radius: 26px;
+    padding: 38px 30px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+    transition: all 0.35s ease;
+}
+
+.why-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 40px 80px rgba(37,99,235,0.18);
+    border-color: var(--primary);
+}
+
+.why-icon {
+    font-size: 2.2rem;
+    margin-bottom: 18px;
+}
+
+.why-card h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #0f172a;
+}
+
+.why-card p {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.6;
+}
+/* ================= HOW IT WORKS ================= */
+.how-section {
+    padding: 30px 20px 40px;
+    text-align: center;
+    background: linear-gradient(to bottom, #ffffff, #f8fafc);
+}
+
+.how-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: #0f172a;
+}
+
+.how-subtitle {
+    max-width: 620px;
+    margin: 0 auto 50px;
+    font-size: 1.05rem;
+    color: #64748b;
+}
+
+.how-steps {
+    max-width: 1100px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+}
+
+.how-card {
+    position: relative;
+    background: white;
+    border-radius: 22px;
+    padding: 36px 28px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.06);
+    transition: all 0.35s ease;
+}
+
+.how-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 35px 70px rgba(37,99,235,0.15);
+    border-color: var(--primary);
+}
+
+.step-num {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+}
+
+.how-card h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.how-card p {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.6;
+}
+
+</style>
+
+<!-- ================= HERO ================= -->
+<div class="hero-wrapper">
+    <div class="hero-content">
+        <div class="badge">🚀 AI-Powered Smart Gallery</div>
+
+        <h1 class="hero-title">
+            Your Memories.<br>
+            <span>Organized by Intelligence.</span>
+        </h1>
+
+        <p class="subtitle">
+            Ai SmartGallery automatically organizes your photos by people,
+            events, and moments using advanced face recognition.
+        </p>
+
+        <div class="cta-group">
+            <a href="{% url 'register' %}" class="cta-primary">Get Started Free</a>
+            <a href="{% url 'login' %}" class="cta-secondary">Login</a>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card"><h3>99%</h3><p>Face Accuracy</p></div>
+            <div class="stat-card"><h3>1-Click</h3><p>Visual Search</p></div>
+            <div class="stat-card"><h3>AI</h3><p>Smart Events</p></div>
+        </div>
+    </div>
+<!-- ================= WHY SMARTGALLERY ================= -->
+<div class="why-section">
+    <h2 class="why-title">Why Ai SmartGallery?</h2>
+    <p class="why-subtitle">
+        Built for people who value privacy, speed, and intelligent photo organization.
+    </p>
+
+    <div class="why-grid">
+        <div class="why-card">
+            <div class="why-icon">🔒</div>
+            <h4>Privacy First</h4>
+            <p>Your photos stay on your server. No cloud tracking, no data selling.</p>
+        </div>
+
+        <div class="why-card">
+            <div class="why-icon">⚡</div>
+            <h4>Blazing Fast</h4>
+            <p>Optimized face matching & clustering for instant results.</p>
+        </div>
+
+        <div class="why-card">
+            <div class="why-icon">🧠</div>
+            <h4>On-Device AI</h4>
+            <p>InsightFace powered recognition without sending data externally.</p>
+        </div>
+
+        <div class="why-card">
+            <div class="why-icon">🔍</div>
+            <h4>Google-Like Search</h4>
+            <p>Upload a face and instantly find every matching photo.</p>
+        </div>
+    </div>
+</div>
+
+    <!-- APP PREVIEW -->
+    <div class="mockup-container">
+        <div class="app-preview">
+            <div class="app-topbar">
+                <div class="logo">📸 Ai SmartGallery</div>
+                <div class="app-nav">
+                    <span class="active">Photos</span>
+                    <span>People</span>
+                    <span>Events</span>
+                </div>
+                <div class="search-box">🔍 Search people, events…</div>
+                <div class="avatar"></div>
+            </div>
+
+            <div class="app-body">
+                <div class="library-card">
+                    <div>
+                        <h3>My Library</h3>
+                        <p style="color:#64748b;">All your memories, organized by AI.</p>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <div class="library-stats">
+    <div class="lib-card">
+        <span class="lib-icon">📷</span>
+        <div>
+            <strong>5</strong>
+            <small>Photos</small>
+        </div>
+    </div>
+
+    <div class="lib-card">
+        <span class="lib-icon">📅</span>
+        <div>
+            <strong>1</strong>
+            <small>Event</small>
+        </div>
+    </div>
+
+    <div class="lib-card">
+        <span class="lib-icon">👥</span>
+        <div>
+            <strong>2</strong>
+            <small>People</small>
+        </div>
+    </div>
+</div>
+
+
+                <div class="preview-grid">
+                    <div class="preview-photo"></div>
+                    <div class="preview-photo"></div>
+                    <div class="preview-photo"></div>
+                    <div class="preview-photo"></div>
+                    <div class="preview-photo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ================= HOW IT WORKS ================= -->
+<div class="how-section">
+    <h2 class="how-title">How Ai SmartGallery Works</h2>
+    <p class="how-subtitle">
+        From upload to intelligent organization — fully automated.
+    </p>
+
+    <div class="how-steps">
+        <div class="how-card">
+            <span class="step-num">01</span>
+            <h4>Upload Photos</h4>
+            <p>Add photos from your device. No manual tagging required.</p>
+        </div>
+
+        <div class="how-card">
+            <span class="step-num">02</span>
+            <h4>AI Analyzes</h4>
+            <p>Faces, timestamps, and similarities are processed instantly.</p>
+        </div>
+
+        <div class="how-card">
+            <span class="step-num">03</span>
+            <h4>Explore Smartly</h4>
+            <p>Browse by people, events, or search visually like Google Photos.</p>
+        </div>
+    </div>
+</div>
+<!-- ================= BUBBLE SCRIPT ================= -->
+<script>
+const canvas = document.getElementById("bubbleCanvas");
+const ctx = canvas.getContext("2d");
+
+let bubbles = [];
+let mouse = { x: null, y: null };
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+class Bubble {
+    constructor() { this.reset(); }
+    reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * canvas.height;
+        this.radius = Math.random() * 12 + 6;
+        this.speed = Math.random() * 0.8 + 0.3;
+        this.opacity = Math.random() * 0.4 + 0.15;
+        this.broken = false;
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(99,102,241,${this.opacity})`;
+        ctx.fill();
+    }
+    update() {
+        this.y -= this.speed;
+        if (mouse.x && mouse.y) {
+            const d = Math.hypot(this.x - mouse.x, this.y - mouse.y);
+            if (d < this.radius + 15) this.broken = true;
+        }
+        if (this.broken) {
+            this.radius -= 1;
+            this.opacity -= 0.05;
+        }
+        if (this.radius <= 0 || this.opacity <= 0 || this.y < -50) {
+            this.reset();
+        }
+    }
+}
+
+for (let i = 0; i < 90; i++) bubbles.push(new Bubble());
+
+function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    bubbles.forEach(b => { b.update(); b.draw(); });
+    requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener("mousemove", e => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+window.addEventListener("touchmove", e => {
+    mouse.x = e.touches[0].clientX;
+    mouse.y = e.touches[0].clientY;
+});
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+
